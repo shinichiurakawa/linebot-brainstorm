@@ -1,0 +1,7 @@
+awsconnection:
+ hostname: (your-hostname)
+ ideaSearchEndpoint: (your-search-endpoint)
+ ideaPostEndpoint: (your-post-endpoint)
+ port: (your-port)
+ id: (your-id)
+ key: (your-key)
