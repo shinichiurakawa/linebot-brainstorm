@@ -11,7 +11,7 @@ public class SearchIdeaDto {
     public void urlEncode() {
         URLCodec codec = new URLCodec("UTF-8");
         try {
-            keyword = codec.decode(keyword, "UTF-8");
+            keyword = codec.encode(keyword, "UTF-8");
         } catch (Exception e) {
             System.out.println("Exception at SearchIdeaDto.urlEncode. e = " + e.getMessage());
         }

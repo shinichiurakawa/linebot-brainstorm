@@ -49,6 +49,11 @@ public class AwsApiImplDao implements AwsApiDao {
 
     public CloseableHttpClient createOrgHttpClient() throws  Exception {
         logger.info("[IN] AwsApiDao.createOrgHttpClient");
+        if (awsConnection.checkCertification()) {
+            CloseableHttpClient httpclient = HttpClients.createDefault();
+            return httpclient;
+        }
+
         try {
             TrustStrategy trustStrategy = new TrustSelfSignedStrategy();
             SSLContext sslContext =
@@ -76,7 +81,6 @@ public class AwsApiImplDao implements AwsApiDao {
         logger.info("[IN] AwsApiDao.postIdea");
 
         String ret = "";
-        //CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpClient httpclient = null;
         HttpPost request = new HttpPost(this.createIdeaPostString());
         ObjectMapper mapper = new ObjectMapper();
@@ -104,13 +108,17 @@ public class AwsApiImplDao implements AwsApiDao {
                 ret = EntityUtils.toString(response.getEntity(),StandardCharsets.UTF_8);
             }
         } catch (ClientProtocolException e) {
-            ret = "ClientProtocolException: " + e.getMessage();
+            logger.info("ClientProtocolException: " + e.getStackTrace());
+            ret = "system error.";
         } catch (UnsupportedEncodingException e) {
-            ret = "UnsupportedEncodingException: " + e.getMessage();
+            logger.info("UnsupportedEncodingException: " + e.getStackTrace());
+            ret = "system error.";
         } catch (IOException e) {
-            ret = "IOException: " + e.getMessage();
+            logger.info("IOException: " + e.getStackTrace());
+            ret = "system error.";
         } catch (Exception e) {
-            ret = "Exception: " + e.getMessage();
+            logger.info("Exception: " + e.getStackTrace());
+            ret = "system error.";
         } finally {
             try {
                 if (response != null) {
@@ -120,8 +128,8 @@ public class AwsApiImplDao implements AwsApiDao {
                     httpclient.close();
                 }
             } catch (IOException e) {
-                ret = "IOException: " + e.getMessage();
-                //e.printStackTrace();
+                logger.info("Exception: " + e.getStackTrace());
+                ret = "system error.";
             }
         }
         logger.info("[OUT] AwsApiDao.postIdea" + ret);
@@ -133,7 +141,6 @@ public class AwsApiImplDao implements AwsApiDao {
         logger.info("[IN] AwsApiDao.searchIdea");
         ResponseSearchResultDto responseSearchResultDto = null;
         String ret = "";
-        //CloseableHttpClient httpclient = HttpClients.createDefault();
         CloseableHttpClient httpclient = null;
         HttpPost request = new HttpPost(this.createIdeaSearchString());
         ObjectMapper mapper = new ObjectMapper();
@@ -161,25 +168,22 @@ public class AwsApiImplDao implements AwsApiDao {
                 logger.info("[--] AwsApiDao.searchIdea : status == HttpStatus.SC_OK(1)");
                 ret = EntityUtils.toString(response.getEntity(),StandardCharsets.UTF_8);
                 //responseSearchResultDto = mapper.readValue(EntityUtils.toString(response.getEntity(),StandardCharsets.UTF_8),ResponseSearchResultDto.class);
-                // decode
-                URLCodec codec = new URLCodec("UTF-8");
-                ret = codec.decode(ret, "UTF-8");
                 logger.info("[--] AwsApiDao.searchIdea : status == HttpStatus.SC_OK(2) ret = " + ret);
             } else {
                 logger.info("[--] AwsApiDao.searchIdea : status != HttpStatus.SC_OK");
             }
         } catch (ClientProtocolException e) {
-            ret = "ClientProtocolException: " + e.getMessage();
-            responseSearchResultDto.setStatus("NG:Exception:ClientProtocolException");
-            //e.printStackTrace();
+            logger.info("ClientProtocolException: " + e.getStackTrace());
+            responseSearchResultDto.setStatus("NG");
         } catch (UnsupportedEncodingException e) {
-            ret = "UnsupportedEncodingException: " + e.getMessage();
-            responseSearchResultDto.setStatus("NG:Exception:UnsupportedEncodingException");
+            logger.info("UnsupportedEncodingException: " + e.getStackTrace());
+            responseSearchResultDto.setStatus("NG");
         } catch (IOException e) {
-            ret = "IOException: " + e.getMessage();
-            responseSearchResultDto.setStatus("NG:Exception:IOException");
+            logger.info("IOException: " + e.getStackTrace());
+            responseSearchResultDto.setStatus("NG");
         } catch (Exception e) {
-            ret = "Exception: " + e.getMessage();
+            logger.info("Exception: " + e.getStackTrace());
+            responseSearchResultDto.setStatus("NG");
         } finally {
             try {
                 if (response != null) {
@@ -189,12 +193,11 @@ public class AwsApiImplDao implements AwsApiDao {
                     httpclient.close();
                 }
             } catch (IOException e) {
-                ret = "IOException: " + e.getMessage();
-                responseSearchResultDto.setStatus("NG:Exception:IOException");
-                //e.printStackTrace();
+                logger.info("IOException: " + e.getStackTrace());
+                responseSearchResultDto.setStatus("NG");
             }
         }
-        logger.info("[IN] AwsApiDao.searchIdea" + ret);
+        logger.info("[OUT] AwsApiDao.searchIdea" + ret);
         return ret;
         //return responseSearchResultDto;
     }

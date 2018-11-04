@@ -1,7 +1,8 @@
 awsconnection:
- hostname: (your-hostname)
- ideaSearchEndpoint: (your-search-endpoint)
- ideaPostEndpoint: (your-post-endpoint)
- port: (your-port)
- id: (your-id)
- key: (your-key)
+ hostname: "(hostname)"
+ ideaSearchEndpoint: "/(endpoint)"
+ ideaPostEndpoint: "/(endpoint)"
+ certification: "(flg)"
+ port: (port)
+ id: "(cert id)"
+ key: "(cert key)"
